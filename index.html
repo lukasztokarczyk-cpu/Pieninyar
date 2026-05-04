@@ -455,10 +455,71 @@ function buildQNav(){
   }
 }
 
+// ── KALIBRACJA POI ───────────────────────────────────────────────────────────
+var calMode=false, calIdx=0, calMarkers=[];
+
+function startCalibration(){
+  calMode=true; calIdx=0; calMarkers=[];
+  showCalPrompt();
+  mapObj.on("click", onCalClick);
+  document.getElementById("cal-btn").style.background="#e24b4a";
+  document.getElementById("cal-btn").textContent="Anuluj kalibracje";
+  document.getElementById("cal-btn").onclick=stopCalibration;
+}
+
+function stopCalibration(){
+  calMode=false;
+  mapObj.off("click", onCalClick);
+  var panel=document.getElementById("cal-panel");
+  if(panel) panel.remove();
+  document.getElementById("cal-btn").style.background="#ba7517";
+  document.getElementById("cal-btn").textContent="⚙ Kalibracja POI";
+  document.getElementById("cal-btn").onclick=startCalibration;
+  calMarkers.forEach(function(m){mapObj.removeLayer(m);});
+}
+
+function showCalPrompt(){
+  var old=document.getElementById("cal-panel");
+  if(old) old.remove();
+  if(calIdx>=POIS.length){
+    // Zapisz i zakoncz
+    var out="Skopiuj te wspolrzedne:\n\n";
+    POIS.forEach(function(p){
+      out+=p.name+": "+p.lat.toFixed(6)+", "+p.lng.toFixed(6)+"\n";
+    });
+    alert(out);
+    stopCalibration();
+    renderPOIList();
+    return;
+  }
+  var panel=document.createElement("div");
+  panel.id="cal-panel";
+  panel.style.cssText="position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#0a1e14;border:2px solid #ba7517;border-radius:12px;padding:12px 18px;z-index:9999;text-align:center;max-width:90%";
+  panel.innerHTML='<div style="color:#ba7517;font-size:11px;margin-bottom:4px">TRYB KALIBRACJI ('+(calIdx+1)+'/'+POIS.length+')</div>'
+    +'<div style="font-weight:500;font-size:15px;margin-bottom:6px">Kliknij na mapie lokalizacje:</div>'
+    +'<div style="color:#1d9e75;font-size:18px;font-weight:700">'+POIS[calIdx].name+'</div>'
+    +'<div style="color:#8baab5;font-size:12px;margin-top:4px">'+POIS[calIdx].type+' · '+POIS[calIdx].alt+'m n.p.m.</div>';
+  document.body.appendChild(panel);
+}
+
+function onCalClick(e){
+  if(!calMode||calIdx>=POIS.length) return;
+  var lat=e.latlng.lat, lng=e.latlng.lng;
+  POIS[calIdx].lat=lat;
+  POIS[calIdx].lng=lng;
+
+  // Dodaj marker potwierdzajacy
+  var ic=L.divIcon({html:"<div style='width:28px;height:28px;border-radius:50%;background:"+POIS[calIdx].col+";border:3px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700'>"+POIS[calIdx].id+"</div>",iconAnchor:[14,14],className:""});
+  var m=L.marker([lat,lng],{icon:ic}).addTo(mapObj).bindPopup("<b>"+POIS[calIdx].name+"</b><br>"+lat.toFixed(6)+", "+lng.toFixed(6)).openPopup();
+  calMarkers.push(m);
+
+  calIdx++;
+  setTimeout(showCalPrompt, 300);
+}
+
 // ── MAPA ─────────────────────────────────────────────────────────────────────
 function initMap(){
-  // Startujemy na centrum Pienin, ale od razu szukamy GPS
-  mapObj=L.map("mapEl",{zoomControl:true}).setView([49.4200,20.3600],13);
+  mapObj=L.map("mapEl",{zoomControl:true}).setView([49.4200,20.3700],13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"OSM",maxZoom:19}).addTo(mapObj);
 
   // Marker uzytkownika
@@ -490,7 +551,21 @@ function initMap(){
   L.polyline([[49.4194,20.4028],[49.4150,20.3950],[49.4097,20.3956],[49.4052,20.4113]],
     {color:"#378add",weight:3,dashArray:"7,5",opacity:.8}).addTo(mapObj).bindPopup("Szlak niebieski");
 
-  // Przycisk "moja pozycja"
+  // Przycisk kalibracji
+  var calBtn=L.control({position:"topleft"});
+  calBtn.onAdd=function(){
+    var d=L.DomUtil.create("div","");
+    d.innerHTML='<button id="cal-btn" style="background:#ba7517;border:none;border-radius:8px;padding:6px 10px;color:#fff;font-size:11px;cursor:pointer;margin-top:44px;display:block">&#9881; Kalibracja POI</button>';
+    L.DomEvent.disableClickPropagation(d);
+    return d;
+  };
+  calBtn.addTo(mapObj);
+  setTimeout(function(){
+    var btn=document.getElementById("cal-btn");
+    if(btn) btn.addEventListener("click",startCalibration);
+  },500);
+
+  // Przycisk GPS
   var locBtn=L.control({position:"topright"});
   locBtn.onAdd=function(){
     var d=L.DomUtil.create("button","");
