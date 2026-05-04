@@ -519,7 +519,7 @@ function onCalClick(e){
 
 // ── MAPA ─────────────────────────────────────────────────────────────────────
 function initMap(){
-  mapObj=L.map("mapEl",{zoomControl:true,crs:L.CRS.EPSG3857}).setView([49.4200,20.3700],13);
+  mapObj=L.map("mapEl",{zoomControl:true}).setView([49.4200,20.3700],13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"OSM",maxZoom:19}).addTo(mapObj);
 
   // Marker uzytkownika
