@@ -519,7 +519,7 @@ function onCalClick(e){
 
 // ── MAPA ─────────────────────────────────────────────────────────────────────
 function initMap(){
-  mapObj=L.map("mapEl",{zoomControl:true}).setView([49.4200,20.3700],13);
+  mapObj=L.map("mapEl",{zoomControl:true,crs:L.CRS.EPSG3857}).setView([49.4200,20.3700],13);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"OSM",maxZoom:19}).addTo(mapObj);
 
   // Marker uzytkownika
@@ -545,7 +545,8 @@ function initMap(){
       .bindPopup("<b>"+p.name+"</b><br><small style='color:#8baab5'>"+p.type+" &middot; "+p.alt+"m n.p.m.</small><br><span style='font-size:12px'>"+p.desc+"</span>");
   }
 
-  // Szlaki (trasy przyblizone)
+  // Marker testowy - centrum Czorsztyna (znane miejsce do weryfikacji)
+  L.marker([49.4383,20.3308],{icon:L.divIcon({html:"<div style='background:#e24b4a;color:#fff;padding:3px 6px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap'>TEST: Czorsztyn</div>",className:""})}).addTo(mapObj); (trasy przyblizone)
   L.polyline([[49.4347,20.3197],[49.4280,20.3350],[49.4200,20.3600],[49.4097,20.3956],[49.4022,20.3931]],
     {color:"#e24b4a",weight:3,dashArray:"7,5",opacity:.8}).addTo(mapObj).bindPopup("Szlak czerwony");
   L.polyline([[49.4194,20.4028],[49.4150,20.3950],[49.4097,20.3956],[49.4052,20.4113]],
