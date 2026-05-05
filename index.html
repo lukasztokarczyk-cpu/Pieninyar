@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Pieniny AR</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:#0a1628;color:#e8f4f0;font-family:system-ui,sans-serif}
@@ -556,12 +555,32 @@ function togD(id){
   e.style.display=op?"none":"block"; a.textContent=op?"v":"^";
 }
 
-window.addEventListener("DOMContentLoaded",function(){
+function startApp(){
   initMap();
   renderPOIList();
   renderDisc();
   initGPS();
+}
+
+window.addEventListener("DOMContentLoaded",function(){
+  if(window.L){
+    startApp();
+  } else {
+    var s=document.querySelector('script[src*="leaflet"]');
+    if(s){
+      s.addEventListener("load",startApp);
+      s.addEventListener("error",function(){
+        document.getElementById("mapEl").innerHTML="<div style='padding:20px;color:#e24b4a;text-align:center'>Blad ladowania mapy. Sprawdz polaczenie z internetem.</div>";
+        renderPOIList();
+        renderDisc();
+        initGPS();
+      });
+    } else {
+      startApp();
+    }
+  }
 });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </body>
 </html>
