@@ -9,21 +9,24 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:#0a1628;color:#e8f4f0;font-family:system-ui,sans-serif}
-
-/* GŁÓWNY LAYOUT */
 #app{display:flex;flex-direction:column;height:100%}
-#hdr{padding:10px 14px;border-bottom:1px solid rgba(29,158,117,.2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#0a1628;z-index:100}
+#hdr{padding:10px 14px;border-bottom:1px solid rgba(29,158,117,.2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 #pages{flex:1;position:relative;overflow:hidden}
-#botnav{display:flex;background:rgba(10,22,40,.97);border-top:1px solid rgba(29,158,117,.15);flex-shrink:0;z-index:100}
-
-/* STRONY */
-.pg{display:none;position:absolute;inset:0;overflow-y:auto;padding:12px 12px 16px;-webkit-overflow-scrolling:touch}
+#botnav{display:flex;background:#0a1628;border-top:1px solid rgba(29,158,117,.15);flex-shrink:0}
+.pg{display:none;position:absolute;inset:0;overflow-y:auto;padding:12px}
 .pg.on{display:block}
-
-/* AR PAGE - osobny layout */
 #pg-ar{display:none;position:absolute;inset:0;flex-direction:column}
 #pg-ar.on{display:flex}
-#ar-cam{position:relative;background:#000;flex:1;min-height:0;overflow:hidden}
+.nt{flex:1;background:none;border:none;padding:8px 4px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nt span{font-size:10px;color:#8baab5}
+.nt.on span{color:#1d9e75;font-weight:600}
+.nd{width:4px;height:4px;border-radius:50%;background:#1d9e75;display:none}
+.nt.on .nd{display:block}
+.card{background:#0f2040;border:1px solid rgba(29,158,117,.15);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+#mapEl{height:300px;border-radius:12px;overflow:hidden;border:1px solid rgba(29,158,117,.2);margin-bottom:12px}
+.leaflet-popup-content-wrapper{background:#0f2040;color:#e8f4f0;border-radius:10px}
+.leaflet-popup-tip{background:#0f2040}
+#ar-cam{flex:1;position:relative;background:#000;overflow:hidden;min-height:0}
 #vid{width:100%;height:100%;object-fit:cover;display:block}
 #ar-labels{position:absolute;inset:0;pointer-events:none;z-index:5}
 .arl{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;transition:left .1s linear}
@@ -36,213 +39,206 @@ html,body{height:100%;overflow:hidden;background:#0a1628;color:#e8f4f0;font-fami
 .arl-dt{width:8px;height:8px;border-radius:50%;background:#1d9e75;margin:0 auto;border:2px solid #fff}
 #ar-hud{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none;z-index:10}
 .hpill{background:rgba(5,15,30,.85);border:1px solid rgba(29,158,117,.4);border-radius:20px;padding:4px 10px;font-size:11px;color:#1d9e75}
-#compass{width:48px;height:48px}
 #cam-over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#050e1a;z-index:20;text-align:center;padding:20px}
 #cam-btn{background:#1d9e75;border:none;border-radius:12px;padding:13px 28px;color:#fff;font-size:15px;font-weight:500;cursor:pointer}
-
-/* NAV PANEL - w przepływie flex, NIE absolute */
 #nav-panel{flex-shrink:0;background:#071a0f;border-top:2px solid #1d9e75;padding:10px 14px;display:none;flex-direction:column;gap:8px}
-#nav-row{display:flex;align-items:center;gap:12px}
-#nav-circle{width:60px;height:60px;flex-shrink:0;border-radius:50%;background:rgba(29,158,117,.1);border:2px solid rgba(29,158,117,.4);display:flex;align-items:center;justify-content:center}
-#nav-arr{font-size:34px;transition:transform .25s ease-out;color:#1d9e75;display:block;line-height:1}
-#nav-info{flex:1}
-#nav-dir{font-size:16px;font-weight:600;color:#fff;margin-bottom:6px}
-#nav-stats{display:flex;gap:6px}
+#ar-stat{flex-shrink:0;background:rgba(5,15,30,.9);border-top:1px solid rgba(29,158,117,.1);padding:5px 14px;display:flex;justify-content:space-between;font-size:10px;color:#8baab5}
+#qnav{position:absolute;bottom:8px;left:0;right:0;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;padding:0 8px;pointer-events:auto;z-index:15}
+.qnb{background:rgba(5,15,30,.9);border:1px solid rgba(29,158,117,.5);border-radius:20px;padding:4px 10px;color:#1d9e75;font-size:10px;cursor:pointer;white-space:nowrap}
 .ns{background:#0a1628;border-radius:8px;padding:5px 8px;flex:1;text-align:center}
 .nsv{font-size:13px;font-weight:500;color:#1d9e75}
 .nsk{font-size:10px;color:#8baab5;margin-top:1px}
-#nav-bar-wrap{background:rgba(29,158,117,.1);border-radius:10px;height:3px}
-#nav-bar{height:100%;background:#1d9e75;border-radius:10px;width:0%;transition:width .4s}
-#nav-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-#nav-dest{font-size:12px;font-weight:500;color:#e8f4f0}
-#nav-badge{font-size:10px;padding:1px 8px;border-radius:20px}
-
-/* AR STATUS BAR */
-#ar-stat{flex-shrink:0;background:rgba(5,15,30,.9);border-top:1px solid rgba(29,158,117,.1);padding:5px 14px;display:flex;justify-content:space-between;font-size:10px;color:#8baab5}
-
-/* QUICK NAV */
-#qnav{position:absolute;bottom:8px;left:0;right:0;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;padding:0 8px;pointer-events:auto;z-index:15}
-.qnb{background:rgba(5,15,30,.9);border:1px solid rgba(29,158,117,.5);border-radius:20px;padding:4px 10px;color:#1d9e75;font-size:10px;cursor:pointer;white-space:nowrap;pointer-events:auto}
-
-/* BOTTOM NAV */
-.nt{flex:1;background:none;border:none;padding:8px 4px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-.nt span{font-size:10px;color:#8baab5}
-.nt.on span{color:#1d9e75;font-weight:600}
-.nd{width:4px;height:4px;border-radius:50%;background:#1d9e75;display:none}
-.nt.on .nd{display:block}
-
-/* KARTA */
-.card{background:#0f2040;border:1px solid rgba(29,158,117,.15);border-radius:12px;padding:12px 14px;margin-bottom:8px}
-.mut{color:#8baab5}
-.sg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.sb{background:#0a1628;border-radius:8px;padding:8px;text-align:center}
-
-/* MAP */
-#mapEl{height:300px;border-radius:12px;overflow:hidden;border:1px solid rgba(29,158,117,.15);margin-bottom:12px}
-.leaflet-popup-content-wrapper{background:#0f2040;color:#e8f4f0;border-radius:10px}
-.leaflet-popup-tip{background:#0f2040}
+#nav-circle{width:60px;height:60px;flex-shrink:0;border-radius:50%;background:rgba(29,158,117,.1);border:2px solid rgba(29,158,117,.4);display:flex;align-items:center;justify-content:center}
+#nav-arr{font-size:34px;transition:transform .25s ease-out;color:#1d9e75;display:block;line-height:1}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <div id="hdr">
-    <div style="display:flex;align-items:center;gap:8px">
-      <div style="width:28px;height:28px;border-radius:8px;background:rgba(29,158,117,.2);border:1px solid rgba(29,158,117,.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">P</div>
-      <div>
-        <div style="font-weight:600;font-size:15px">Pieniny AR</div>
-        <div style="font-size:10px;color:#8baab5" id="gps-lbl">Lokalizowanie...</div>
+<div id="hdr">
+  <div style="display:flex;align-items:center;gap:8px">
+    <div style="width:28px;height:28px;border-radius:8px;background:rgba(29,158,117,.2);border:1px solid rgba(29,158,117,.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">P</div>
+    <div>
+      <div style="font-weight:600;font-size:15px">Pieniny AR</div>
+      <div style="font-size:10px;color:#8baab5" id="gps-lbl">Lokalizowanie...</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:5px">
+    <div style="width:7px;height:7px;border-radius:50%;background:#1d9e75"></div>
+    <span style="color:#1d9e75;font-size:10px">Online</span>
+  </div>
+</div>
+
+<div id="pages">
+
+  <div class="pg on" id="pg-map">
+    <div id="mapEl"></div>
+    <div style="color:#8baab5;font-size:12px;margin-bottom:8px">Kliknij marker aby zobaczyc szczegoly</div>
+    <div id="poi-list"></div>
+  </div>
+
+  <div id="pg-ar">
+    <div id="ar-cam">
+      <video id="vid" autoplay playsinline muted></video>
+      <div id="ar-labels"></div>
+      <div id="ar-hud">
+        <div class="hpill" id="ar-pill" style="display:none">&#9679; AR LIVE</div>
+        <div></div>
+        <svg viewBox="0 0 48 48" style="width:48px;height:48px">
+          <circle cx="24" cy="24" r="22" fill="rgba(5,15,30,.85)" stroke="rgba(29,158,117,.4)" stroke-width="1.5"/>
+          <text x="24" y="12" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">N</text>
+          <text x="24" y="42" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">S</text>
+          <text x="8" y="28" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">W</text>
+          <text x="40" y="28" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">E</text>
+          <polygon id="c-arrow" points="24,7 27,24 24,21 21,24" fill="#e24b4a"/>
+          <polygon points="24,41 27,24 24,27 21,24" fill="#666"/>
+        </svg>
+      </div>
+      <div id="qnav"></div>
+      <div id="cam-over">
+        <div style="font-size:48px">&#128247;</div>
+        <div style="font-size:16px;font-weight:600">Widok AR z kamery</div>
+        <div style="color:#8baab5;font-size:13px;max-width:280px;line-height:1.6">Aplikacja uzyje kamery tylnej i GPS aby wyswietlic punkty w terenie.</div>
+        <button id="cam-btn">&#9654; Uruchom AR</button>
+        <div id="cam-err-txt" style="color:#e24b4a;font-size:12px;display:none;max-width:280px;line-height:1.5;margin-top:8px"></div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:5px">
-      <div style="width:7px;height:7px;border-radius:50%;background:#1d9e75"></div>
-      <span style="color:#1d9e75;font-size:10px">Online</span>
+    <div id="nav-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:#8baab5">Cel:</span>
+          <span id="nav-dest" style="font-weight:500;font-size:14px">--</span>
+          <span id="nav-badge"></span>
+        </div>
+        <button onclick="stopNav()" style="background:rgba(226,75,74,.15);border:1px solid rgba(226,75,74,.4);border-radius:8px;padding:4px 10px;color:#e24b4a;font-size:11px;cursor:pointer">Stop</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div id="nav-circle"><span id="nav-arr">&#8593;</span></div>
+        <div style="flex:1">
+          <div id="nav-dir" style="font-size:16px;font-weight:600;color:#fff;margin-bottom:6px">--</div>
+          <div style="display:flex;gap:6px">
+            <div class="ns"><div class="nsv" id="nv-dist">--</div><div class="nsk">Dystans</div></div>
+            <div class="ns"><div class="nsv" id="nv-time">--</div><div class="nsk">Czas</div></div>
+            <div class="ns"><div class="nsv" id="nv-az">--</div><div class="nsk">Azymut</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:rgba(29,158,117,.1);border-radius:10px;height:3px;margin-top:4px">
+        <div id="nav-bar" style="height:100%;background:#1d9e75;border-radius:10px;width:0%;transition:width .4s"></div>
+      </div>
+    </div>
+    <div id="ar-stat">
+      <span id="az-lbl">Az: --</span>
+      <span id="gps2-lbl">GPS: --</span>
+      <span>FOV 60</span>
     </div>
   </div>
 
-  <div id="pages">
-
-    <!-- MAPA -->
-    <div class="pg on" id="pg-map">
-      <div id="mapEl"></div>
-      <div style="color:#8baab5;font-size:12px;margin-bottom:8px">Kliknij marker aby zobaczyc szczegoly</div>
-      <div id="poi-list"></div>
-    </div>
-
-    <!-- AR -->
-    <div id="pg-ar">
-      <div id="ar-cam">
-        <video id="vid" autoplay playsinline muted></video>
-        <div id="ar-labels"></div>
-        <div id="ar-hud">
-          <div class="hpill" id="ar-pill" style="display:none">&#9679; AR LIVE</div>
-          <div></div>
-          <svg id="compass" viewBox="0 0 48 48">
-            <circle cx="24" cy="24" r="22" fill="rgba(5,15,30,.85)" stroke="rgba(29,158,117,.4)" stroke-width="1.5"/>
-            <text x="24" y="12" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">N</text>
-            <text x="24" y="42" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">S</text>
-            <text x="8"  y="28" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">W</text>
-            <text x="40" y="28" text-anchor="middle" font-size="7" fill="#8baab5" font-family="system-ui">E</text>
-            <polygon id="c-arrow" points="24,7 27,24 24,21 21,24" fill="#e24b4a"/>
-            <polygon points="24,41 27,24 24,27 21,24" fill="#666"/>
-          </svg>
-        </div>
-        <div id="qnav"></div>
-        <div id="cam-over">
-          <div style="font-size:48px">&#128247;</div>
-          <div style="font-size:16px;font-weight:600">Widok AR z kamery</div>
-          <div style="color:#8baab5;font-size:13px;max-width:280px;line-height:1.6">Aplikacja uzyje kamery tylnej i GPS aby wyswietlic punkty w terenie.</div>
-          <button id="cam-btn">&#9654; Uruchom AR</button>
-          <div id="cam-err-txt" style="color:#e24b4a;font-size:12px;display:none;max-width:280px;line-height:1.5"></div>
-        </div>
-      </div>
-
-      <!-- NAV PANEL - w strumieniu flex, nie absolute! -->
-      <div id="nav-panel">
-        <div id="nav-head">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:11px;color:#8baab5">Cel:</span>
-            <span id="nav-dest">--</span>
-            <span id="nav-badge"></span>
-          </div>
-          <button onclick="stopNav()" style="background:rgba(226,75,74,.15);border:1px solid rgba(226,75,74,.4);border-radius:8px;padding:4px 10px;color:#e24b4a;font-size:11px;cursor:pointer">Stop</button>
-        </div>
-        <div id="nav-row">
-          <div id="nav-circle">
-            <span id="nav-arr">&#8593;</span>
-          </div>
-          <div id="nav-info">
-            <div id="nav-dir">--</div>
-            <div id="nav-stats">
-              <div class="ns"><div class="nsv" id="nv-dist">--</div><div class="nsk">Dystans</div></div>
-              <div class="ns"><div class="nsv" id="nv-time">--</div><div class="nsk">Czas</div></div>
-              <div class="ns"><div class="nsv" id="nv-az">--</div><div class="nsk">Azymut</div></div>
-            </div>
-          </div>
-        </div>
-        <div id="nav-bar-wrap"><div id="nav-bar"></div></div>
-      </div>
-
-      <div id="ar-stat">
-        <span id="az-lbl">Az: --</span>
-        <span id="gps2-lbl">GPS: --</span>
-        <span>FOV 60&deg;</span>
-      </div>
-    </div>
-
-    <!-- ODKRYJ -->
-    <div class="pg" id="pg-disc">
-      <div id="fbar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
-      <div id="dlist"></div>
-    </div>
-
-    <!-- POGODA -->
-    <div class="pg" id="pg-wx">
-      <div class="card" style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div><div style="color:#8baab5;font-size:12px">Pieniny teraz</div><div style="font-size:38px;font-weight:500;line-height:1.1">14&deg;C</div><div style="color:#8baab5;font-size:12px">Czesciowe zachmurzenie</div></div>
-          <div style="font-size:44px">&#9925;</div>
-        </div>
-        <div class="sg3" style="margin-top:10px">
-          <div class="sb"><div style="font-size:13px;font-weight:500">18 km/h</div><div class="mut" style="font-size:10px;margin-top:2px">Wiatr</div></div>
-          <div class="sb"><div style="font-size:13px;font-weight:500">62%</div><div class="mut" style="font-size:10px;margin-top:2px">Wilgotnosc</div></div>
-          <div class="sb"><div style="font-size:13px;font-weight:500">8 km</div><div class="mut" style="font-size:10px;margin-top:2px">Widocznosc</div></div>
-        </div>
-      </div>
-      <div class="card">
-        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(29,158,117,.07)"><span class="mut" style="width:30px;font-size:12px">Sob</span><span style="flex:1;font-size:12px">Slonecznie</span><span style="font-size:12px">9/18&deg;</span><span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(29,158,117,.15);color:#1d9e75">OK</span></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(29,158,117,.07)"><span class="mut" style="width:30px;font-size:12px">Ndz</span><span style="flex:1;font-size:12px">Pochmurno</span><span style="font-size:12px">8/16&deg;</span><span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(29,158,117,.15);color:#1d9e75">OK</span></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(29,158,117,.07)"><span class="mut" style="width:30px;font-size:12px">Pon</span><span style="flex:1;font-size:12px">Deszcz</span><span style="font-size:12px">7/13&deg;</span><span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(226,75,74,.15);color:#e24b4a">Ryzyko</span></div>
-        <div style="display:flex;align-items:center;gap:10px;padding:7px 0"><span class="mut" style="width:30px;font-size:12px">Wt</span><span style="flex:1;font-size:12px">Pochmurno</span><span style="font-size:12px">10/17&deg;</span><span style="font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(29,158,117,.15);color:#1d9e75">OK</span></div>
-      </div>
-    </div>
-
-    <!-- PROFIL -->
-    <div class="pg" id="pg-prof">
-      <div class="card" style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
-        <div style="width:50px;height:50px;border-radius:50%;background:rgba(29,158,117,.2);border:2px solid #1d9e75;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#128694;</div>
-        <div><div style="font-weight:500;font-size:15px">Marek Kowalski</div><div style="color:#8baab5;font-size:12px">Turysta gorski &middot; Poziom 7</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
-        <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">4</div><div style="color:#8baab5;font-size:10px">Szczyty</div></div>
-        <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">38</div><div style="color:#8baab5;font-size:10px">km</div></div>
-        <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">1240</div><div style="color:#8baab5;font-size:10px">XP</div></div>
-        <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">6</div><div style="color:#8baab5;font-size:10px">Odznaki</div></div>
-      </div>
-    </div>
-
-  </div><!-- /pages -->
-
-  <div id="botnav">
-    <button class="nt on" id="nt0"><span>Mapa</span><div class="nd"></div></button>
-    <button class="nt" id="nt1"><span>AR</span><div class="nd"></div></button>
-    <button class="nt" id="nt2"><span>Odkryj</span><div class="nd"></div></button>
-    <button class="nt" id="nt3"><span>Pogoda</span><div class="nd"></div></button>
-    <button class="nt" id="nt4"><span>Profil</span><div class="nd"></div></button>
+  <div class="pg" id="pg-disc">
+    <div id="fbar" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+    <div id="dlist"></div>
   </div>
 
-</div><!-- /app -->
+  <div class="pg" id="pg-wx">
+    <div style="background:#1a0505;border:2px solid #e24b4a;border-radius:14px;padding:14px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="color:#e24b4a;font-weight:700;font-size:16px">&#9888; PANEL RATUNKOWY</div>
+          <div style="color:#8baab5;font-size:11px;margin-top:2px" id="sos-gps-lbl">GPS: oczekiwanie...</div>
+        </div>
+        <button onclick="sosCopy()" style="background:#e24b4a;border:none;border-radius:10px;padding:8px 14px;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Kopiuj pozycje</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <a href="tel:601100300" style="text-decoration:none">
+          <div style="background:#0a1628;border:2px solid #e24b4a;border-radius:12px;padding:12px 6px;text-align:center">
+            <div style="font-size:24px">&#128682;</div>
+            <div style="color:#e24b4a;font-weight:700;font-size:12px;margin-top:4px">GOPR</div>
+            <div style="color:#fff;font-size:11px;margin-top:2px">601 100 300</div>
+          </div>
+        </a>
+        <a href="tel:112" style="text-decoration:none">
+          <div style="background:#0a1628;border:2px solid #e24b4a;border-radius:12px;padding:12px 6px;text-align:center">
+            <div style="font-size:24px">&#128691;</div>
+            <div style="color:#e24b4a;font-weight:700;font-size:12px;margin-top:4px">ALARM</div>
+            <div style="color:#fff;font-size:11px;margin-top:2px">112</div>
+          </div>
+        </a>
+        <a href="tel:999" style="text-decoration:none">
+          <div style="background:#0a1628;border:2px solid #e24b4a;border-radius:12px;padding:12px 6px;text-align:center">
+            <div style="font-size:24px">&#128657;</div>
+            <div style="color:#e24b4a;font-weight:700;font-size:12px;margin-top:4px">POGOTOWIE</div>
+            <div style="color:#fff;font-size:11px;margin-top:2px">999</div>
+          </div>
+        </a>
+      </div>
+      <div id="sos-copied" style="display:none;color:#1d9e75;font-size:12px;text-align:center;margin-top:8px">&#10003; Skopiowano pozycje GPS!</div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="color:#8baab5;font-size:12px" id="wx-loc">Pobieranie pogody...</div>
+          <div style="font-size:38px;font-weight:500;line-height:1.1" id="wx-temp">--</div>
+          <div style="color:#8baab5;font-size:12px" id="wx-desc">--</div>
+          <div style="color:#8baab5;font-size:11px;margin-top:2px" id="wx-feel"></div>
+        </div>
+        <div style="font-size:44px" id="wx-icon">&#8987;</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+        <div style="background:#0a1628;border-radius:8px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:500" id="wx-wind">--</div><div style="color:#8baab5;font-size:10px;margin-top:2px">Wiatr</div></div>
+        <div style="background:#0a1628;border-radius:8px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:500" id="wx-hum">--</div><div style="color:#8baab5;font-size:10px;margin-top:2px">Wilgotnosc</div></div>
+        <div style="background:#0a1628;border-radius:8px;padding:8px;text-align:center"><div style="font-size:13px;font-weight:500" id="wx-pres">--</div><div style="color:#8baab5;font-size:10px;margin-top:2px">Cisnienie</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="color:#8baab5;font-size:11px;margin-bottom:4px">Prognoza kolejnych dni</div>
+      <div id="wx-daily"><div style="color:#8baab5;font-size:12px;padding:8px 0">Ladowanie...</div></div>
+    </div>
+    <div style="color:#8baab5;font-size:10px;text-align:center;margin-top:8px">Open-Meteo API</div>
+  </div>
 
+  <div class="pg" id="pg-prof">
+    <div class="card" style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+      <div style="width:50px;height:50px;border-radius:50%;background:rgba(29,158,117,.2);border:2px solid #1d9e75;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">&#128694;</div>
+      <div><div style="font-weight:500;font-size:15px">Marek Kowalski</div><div style="color:#8baab5;font-size:12px">Turysta gorski - Poziom 7</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+      <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">4</div><div style="color:#8baab5;font-size:10px">Szczyty</div></div>
+      <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">38</div><div style="color:#8baab5;font-size:10px">km</div></div>
+      <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">1240</div><div style="color:#8baab5;font-size:10px">XP</div></div>
+      <div class="card" style="text-align:center;padding:10px 4px"><div style="color:#1d9e75;font-size:18px;font-weight:600">6</div><div style="color:#8baab5;font-size:10px">Odznaki</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="botnav">
+  <button class="nt on" id="nt0"><span>Mapa</span><div class="nd"></div></button>
+  <button class="nt" id="nt1"><span>AR</span><div class="nd"></div></button>
+  <button class="nt" id="nt2"><span>Odkryj</span><div class="nd"></div></button>
+  <button class="nt" id="nt3"><span>SOS/Pogoda</span><div class="nd"></div></button>
+  <button class="nt" id="nt4"><span>Profil</span><div class="nd"></div></button>
+</div>
+
+</div>
 <script>
-// ── DANE POI (weryfikowane wspolrzedne z OSM) ────────────────────────────────
 var POIS = [
-  {id:1, name:"Trzy Korony",     type:"szczyt",     col:"#1d9e75", lat:49.4022, lng:20.3931, alt:982,  diff:"Umiarkowana", desc:"Najslynniejszy szczyt Pienin, 982 m n.p.m. Widok na caly przelom Dunajca.", leg:"Trzej zbojnicy zamienieni w skaly za kare przez Boga.",            fauna:"Kozica tatrzanska, orzel przedni, sokol wedrowny"},
-  {id:2, name:"Zamek Czorsztyn", type:"zabytek",    col:"#ba7517", lat:49.4347, lng:20.3197, alt:570,  diff:"Latwa",       desc:"Gotyckie ruiny zamku krolewskiego z XIII w. nad Jeziorem Czorszynskim.", leg:"Ostoja obrony przed najazdami wegierskimi w sredniowieczu.",  fauna:"Puszczyk zwyczajny, popielica, mroczek"},
-  {id:3, name:"Zamek Niedzica",  type:"zabytek",    col:"#ba7517", lat:49.3969, lng:20.3175, alt:550,  diff:"Latwa",       desc:"Gotycki zamek z XIV w. zwany Dunajcem, jeden z najlepiej zachowanych.", leg:"Legenda o skarbach Inkow ukrytych w lochach zamku.",           fauna:"Pustulka, tchorz, netoperze"},
-  {id:4, name:"Sokolica",        type:"szczyt",     col:"#1d9e75", lat:49.4097, lng:20.3956, alt:747,  diff:"Umiarkowana", desc:"Charakterystyczny ostaniec skalny, symbol Pienin. Widok na Dunajec.",    leg:"Tu w 1886 r. Walery Eliasz-Radzikowski namalowal slynny obraz.", fauna:"Puchacz zwyczajny, rarog, rys"},
-  {id:5, name:"Przelom Dunajca", type:"rzeka",      col:"#378add", lat:49.4194, lng:20.4028, alt:430,  diff:"Latwa",       desc:"Przelomowy odcinek Dunajca przez Pieniny, splyw tratwami 18 km.",         leg:"Flisakowie splawialy drewno ta trasa od XV wieku.",            fauna:"Wydra europejska, zimorodek, bocian czarny"},
-  {id:6, name:"Schronisko PTTK", type:"schronisko", col:"#97c459", lat:49.4172, lng:20.3867, alt:720,  diff:"Latwa",       desc:"Schronisko gorskie PTTK pod Trzema Koronami, punkt startowy szlakow.",   leg:"Turysci zatrzymuja sie tu od ponad 100 lat.",                  fauna:"Lis, sarna, dzieciol czarny"},
+  {id:1,name:"Trzy Korony",type:"szczyt",col:"#1d9e75",lat:49.412939,lng:20.414338,alt:982,diff:"Umiarkowana",desc:"Najslynniejszy szczyt Pienin 982m n.p.m.",leg:"Trzej zbojnicy zamienieni w skaly za kare przez Boga.",fauna:"Kozica tatrzanska, orzel przedni"},
+  {id:2,name:"Zamek Czorsztyn",type:"zabytek",col:"#ba7517",lat:49.434885,lng:20.312906,alt:568,diff:"Latwa",desc:"Gotyckie ruiny zamku z XIII w. nad Jeziorem Czorszynskim.",leg:"Ostoja obrony przed najazdami wegierskimi.",fauna:"Puszczyk, popielica"},
+  {id:3,name:"Zamek Niedzica",type:"zabytek",col:"#ba7517",lat:49.422409,lng:20.319734,alt:566,diff:"Latwa",desc:"Gotycki zamek z XIV w. zwany Dunajcem.",leg:"Legenda o skarbach Inkow ukrytych w zamku.",fauna:"Pustulka, tchorz"},
+  {id:4,name:"Sokolica",type:"szczyt",col:"#1d9e75",lat:49.417643,lng:20.440366,alt:747,diff:"Umiarkowana",desc:"Ostaniec skalny symbol Pienin. Widok na Dunajec.",leg:"Tu Eliasz-Radzikowski namalowal slynny obraz w 1886r.",fauna:"Puchacz, rarog, rys"},
+  {id:5,name:"Przelom Dunajca",type:"rzeka",col:"#378add",lat:49.406430,lng:20.367900,alt:430,diff:"Latwa",desc:"Przelomowy odcinek Dunajca, splyw tratwami 18km.",leg:"Flisakowie splawialy drewno od XV wieku.",fauna:"Wydra, zimorodek, bocian czarny"},
+  {id:6,name:"Schronisko PTTK",type:"schronisko",col:"#97c459",lat:49.405042,lng:20.411399,alt:470,diff:"Latwa",desc:"Schronisko PTTK pod Trzema Koronami.",leg:"Miejsce spotkan gorali od ponad 100 lat.",fauna:"Lis, sarna, dzieciol"}
 ];
 
 var uLat=49.415, uLng=20.380, hdg=0, arOn=false, mapObj=null, uMark=null;
 var navTarget=null, navStartDist=0, arLblMap={};
+var wxDone=false;
+var DEF_LAT=49.4333, DEF_LNG=20.4167;
 
-// ── TABS ─────────────────────────────────────────────────────────────────────
 var PGS=["pg-map","pg-ar","pg-disc","pg-wx","pg-prof"];
 function goTab(i){
   for(var j=0;j<PGS.length;j++){
-    var el=document.getElementById(PGS[j]);
-    el.classList.remove("on");
+    document.getElementById(PGS[j]).classList.remove("on");
     document.getElementById("nt"+j).classList.remove("on");
   }
   document.getElementById(PGS[i]).classList.add("on");
@@ -253,20 +249,101 @@ for(var ti=0;ti<5;ti++){
   (function(i){document.getElementById("nt"+i).onclick=function(){goTab(i);};})(ti);
 }
 
-// ── GPS ──────────────────────────────────────────────────────────────────────
+function wcDesc(c){
+  if(c===0) return "Bezchmurnie";
+  if(c<=2) return "Czesciowe zachmurzenie";
+  if(c===3) return "Pochmurno";
+  if(c<=49) return "Mgla";
+  if(c<=59) return "Mzawka";
+  if(c<=69) return "Deszcz";
+  if(c<=79) return "Snieg";
+  if(c<=84) return "Przelotny deszcz";
+  if(c<=99) return "Burza";
+  return "Zmienne";
+}
+function wcIcon(c){
+  if(c===0) return "&#9728;";
+  if(c<=2) return "&#9925;";
+  if(c===3) return "&#9729;";
+  if(c<=49) return "&#127787;";
+  if(c<=69) return "&#127783;";
+  if(c<=79) return "&#10052;";
+  if(c<=99) return "&#9928;";
+  return "&#127777;";
+}
+
+function fetchWeather(lat,lng){
+  var url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lng
+    +"&current=temperature_2m,apparent_temperature,weathercode,windspeed_10m,pressure_msl,relativehumidity_2m"
+    +"&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Europe%2FWarsaw&forecast_days=5";
+  fetch(url).then(function(r){return r.json();}).then(function(d){
+    var c=d.current, dl=d.daily;
+    document.getElementById("wx-temp").textContent=Math.round(c.temperature_2m)+"C";
+    document.getElementById("wx-feel").textContent="Odczuwalna: "+Math.round(c.apparent_temperature)+"C";
+    document.getElementById("wx-desc").textContent=wcDesc(c.weathercode);
+    document.getElementById("wx-icon").innerHTML=wcIcon(c.weathercode);
+    document.getElementById("wx-wind").textContent=Math.round(c.windspeed_10m)+" km/h";
+    document.getElementById("wx-hum").textContent=c.relativehumidity_2m+"%";
+    document.getElementById("wx-pres").textContent=Math.round(c.pressure_msl)+" hPa";
+    var dns=["Nd","Pn","Wt","Sr","Cz","Pt","Sb"], html="";
+    for(var i=1;i<Math.min(5,dl.weathercode.length);i++){
+      var dt=new Date(dl.time[i]), dn=dns[dt.getDay()];
+      var ok=dl.weathercode[i]<60;
+      var badge=ok?"<span style='font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(29,158,117,.15);color:#1d9e75'>OK</span>"
+        :"<span style='font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(226,75,74,.15);color:#e24b4a'>Ryzyko</span>";
+      html+="<div style='display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(29,158,117,.07)'>"
+        +"<span style='color:#8baab5;width:28px;font-size:12px'>"+dn+"</span>"
+        +"<span style='font-size:16px'>"+wcIcon(dl.weathercode[i])+"</span>"
+        +"<span style='flex:1;font-size:12px'>"+wcDesc(dl.weathercode[i])+"</span>"
+        +"<span style='font-size:12px'>"+Math.round(dl.temperature_2m_max[i])+"C</span>"
+        +badge+"</div>";
+    }
+    document.getElementById("wx-daily").innerHTML=html;
+  }).catch(function(){
+    document.getElementById("wx-loc").textContent="Blad pobierania pogody";
+  });
+}
+
 function initGPS(){
-  if(!navigator.geolocation) return;
+  if(!navigator.geolocation){
+    document.getElementById("wx-loc").textContent="Kroscienко n.Dunajcem (brak GPS)";
+    fetchWeather(DEF_LAT,DEF_LNG);
+    return;
+  }
+  var t=setTimeout(function(){
+    if(!wxDone){wxDone=true;document.getElementById("wx-loc").textContent="Kroscienko n.Dunajcem (brak GPS)";fetchWeather(DEF_LAT,DEF_LNG);}
+  },8000);
   navigator.geolocation.watchPosition(function(p){
     uLat=p.coords.latitude; uLng=p.coords.longitude;
     document.getElementById("gps-lbl").textContent=uLat.toFixed(4)+"N "+uLng.toFixed(4)+"E";
     document.getElementById("gps2-lbl").textContent=uLat.toFixed(3)+"N";
+    document.getElementById("sos-gps-lbl").textContent="GPS: "+uLat.toFixed(5)+"N, "+uLng.toFixed(5)+"E";
     if(uMark) uMark.setLatLng([uLat,uLng]);
+    if(!wxDone){
+      wxDone=true; clearTimeout(t);
+      document.getElementById("wx-loc").textContent=uLat.toFixed(3)+"N "+uLng.toFixed(3)+"E";
+      fetchWeather(uLat,uLng);
+    }
   },function(){
+    clearTimeout(t);
     document.getElementById("gps-lbl").textContent="GPS niedostepny";
-  },{enableHighAccuracy:true,maximumAge:3000,timeout:10000});
+    if(!wxDone){wxDone=true;document.getElementById("wx-loc").textContent="Kroscienko n.Dunajcem (brak GPS)";fetchWeather(DEF_LAT,DEF_LNG);}
+  },{enableHighAccuracy:true,timeout:8000});
 }
 
-// ── KOMPAS ───────────────────────────────────────────────────────────────────
+function sosCopy(){
+  var txt="POZYCJA GPS: "+uLat.toFixed(6)+"N, "+uLng.toFixed(6)+"E\nhttps://maps.google.com/?q="+uLat+","+uLng;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(function(){
+      var el=document.getElementById("sos-copied");
+      el.style.display="block";
+      setTimeout(function(){el.style.display="none";},3000);
+    });
+  } else {
+    prompt("Skopiuj pozycje GPS:",txt);
+  }
+}
+
 function initCompass(){
   if(!window.DeviceOrientationEvent) return;
   function h(e){
@@ -274,7 +351,7 @@ function initCompass(){
     if(raw==null) return;
     var d=raw-hdg; if(d>180)d-=360; if(d<-180)d+=360;
     hdg=hdg+d*0.12; if(hdg<0)hdg+=360; if(hdg>=360)hdg-=360;
-    document.getElementById("az-lbl").textContent="Az:"+Math.round(hdg)+"°";
+    document.getElementById("az-lbl").textContent="Az:"+Math.round(hdg);
     var a=document.getElementById("c-arrow");
     if(a) a.setAttribute("transform","rotate("+hdg+",24,24)");
   }
@@ -285,7 +362,6 @@ function initCompass(){
   }
 }
 
-// ── MATH ─────────────────────────────────────────────────────────────────────
 function brng(la1,lo1,la2,lo2){
   var dL=(lo2-lo1)*Math.PI/180,f1=la1*Math.PI/180,f2=la2*Math.PI/180;
   return((Math.atan2(Math.sin(dL)*Math.cos(f2),Math.cos(f1)*Math.sin(f2)-Math.sin(f1)*Math.cos(f2)*Math.cos(dL))*180/Math.PI)+360)%360;
@@ -297,27 +373,24 @@ function dkm(la1,lo1,la2,lo2){
 }
 function dirTxt(df){
   var a=Math.abs(df);
-  if(a<15)  return "Idz prosto";
-  if(a<50)  return df<0?"Lekko w lewo":"Lekko w prawo";
+  if(a<15) return "Idz prosto";
+  if(a<50) return df<0?"Lekko w lewo":"Lekko w prawo";
   if(a<115) return df<0?"Skren w lewo":"Skren w prawo";
   if(a<160) return df<0?"Zawroc w lewo":"Zawroc w prawo";
   return "Zawroc";
 }
 function timeTxt(dk,diff){
-  var s=diff==="Trudna"?2.5:diff==="Umiarkowana"?3.0:3.5;
+  var s=diff==="Umiarkowana"?3.0:diff==="Trudna"?2.5:3.5;
   var m=Math.round(dk/s*60);
-  return m<60?m+"min":Math.floor(m/60)+"h"+(m%60?""+m%60+"m":"");
+  return m<60?m+"min":Math.floor(m/60)+"h"+(m%60?m%60+"m":"");
 }
 function dStr(dk){return dk<1?Math.round(dk*1000)+"m":dk.toFixed(2)+"km";}
 
-// ── AR RENDER ────────────────────────────────────────────────────────────────
 function renderAR(){
   if(!arOn){requestAnimationFrame(renderAR);return;}
   var c=document.getElementById("ar-labels");
-  var W=c.offsetWidth||window.innerWidth;
-  var H=c.offsetHeight||300;
+  var W=c.offsetWidth||window.innerWidth, H=c.offsetHeight||300;
   var FOV=60, seen={};
-
   for(var i=0;i<POIS.length;i++){
     var poi=POIS[i];
     var b=brng(uLat,uLng,poi.lat,poi.lng);
@@ -326,28 +399,21 @@ function renderAR(){
     if(Math.abs(df)>FOV/2) continue;
     seen[poi.id]=true;
     var x=((df/(FOV/2))+1)/2*W;
-    // Etykiety w gornej 1/3 ekranu - zawsze widoczne
-    var y=Math.round(H*0.22);
+    var y=Math.min(H*0.22,120);
     var ds=dStr(dk);
     var isNav=navTarget&&navTarget.id===poi.id;
-
     if(arLblMap[poi.id]){
       var el=arLblMap[poi.id];
-      el.style.left=x+"px";
-      el.style.top=y+"px";
-      var dd=el.querySelector(".arl-ds");
-      if(dd) dd.textContent=ds+" · "+poi.alt+"m";
-      var bb=el.querySelector(".arb");
-      if(bb) bb.className="arb"+(isNav?" active":"");
+      el.style.left=x+"px"; el.style.top=y+"px";
+      var dd=el.querySelector(".arl-ds"); if(dd) dd.textContent=ds+" - "+poi.alt+"m";
+      var bb=el.querySelector(".arb"); if(bb) bb.className="arb"+(isNav?" active":"");
     } else {
-      var wrap=document.createElement("div");
-      wrap.className="arl";
-      wrap.style.left=x+"px";
-      wrap.style.top=y+"px";
+      var wrap=document.createElement("div"); wrap.className="arl";
+      wrap.style.left=x+"px"; wrap.style.top=y+"px";
       var bub=document.createElement("div"); bub.className="arb"+(isNav?" active":"");
       var nm=document.createElement("div"); nm.className="arl-nm"; nm.textContent=poi.name;
-      var dv=document.createElement("div"); dv.className="arl-ds"; dv.textContent=ds+" · "+poi.alt+"m";
-      var ht=document.createElement("div"); ht.className="arl-ht"; ht.textContent="&#9654; Dotknij aby nawigowac";
+      var dv=document.createElement("div"); dv.className="arl-ds"; dv.textContent=ds+" - "+poi.alt+"m";
+      var ht=document.createElement("div"); ht.className="arl-ht"; ht.textContent="Dotknij aby nawigowac";
       bub.appendChild(nm); bub.appendChild(dv); bub.appendChild(ht);
       var ln=document.createElement("div"); ln.className="arl-ln";
       var dt=document.createElement("div"); dt.className="arl-dt";
@@ -356,35 +422,27 @@ function renderAR(){
         wrap.addEventListener("click",function(e){e.stopPropagation();startNav(p);});
         wrap.addEventListener("touchend",function(e){e.preventDefault();e.stopPropagation();startNav(p);},{passive:false});
       })(poi);
-      c.appendChild(wrap);
-      arLblMap[poi.id]=wrap;
+      c.appendChild(wrap); arLblMap[poi.id]=wrap;
     }
   }
-  for(var id in arLblMap){
-    if(!seen[id]){c.removeChild(arLblMap[id]);delete arLblMap[id];}
-  }
+  for(var id in arLblMap){if(!seen[id]){c.removeChild(arLblMap[id]);delete arLblMap[id];}}
   if(navTarget) updateNav();
   requestAnimationFrame(renderAR);
 }
 
-// ── NAWIGACJA ────────────────────────────────────────────────────────────────
 function startNav(poi){
-  navTarget=poi;
-  navStartDist=dkm(uLat,uLng,poi.lat,poi.lng);
-  var np=document.getElementById("nav-panel");
-  np.style.display="flex";
+  navTarget=poi; navStartDist=dkm(uLat,uLng,poi.lat,poi.lng);
+  document.getElementById("nav-panel").style.display="flex";
   document.getElementById("nav-dest").textContent=poi.name;
   var dc=poi.diff==="Latwa"?"background:rgba(29,158,117,.2);color:#1d9e75":"background:rgba(186,117,23,.2);color:#ba7517";
   document.getElementById("nav-badge").textContent=poi.diff;
   document.getElementById("nav-badge").style.cssText="font-size:10px;padding:1px 8px;border-radius:20px;"+dc;
   updateNav();
 }
-
 function stopNav(){
   navTarget=null;
   document.getElementById("nav-panel").style.display="none";
 }
-
 function updateNav(){
   if(!navTarget) return;
   var dk=dkm(uLat,uLng,navTarget.lat,navTarget.lng);
@@ -397,27 +455,25 @@ function updateNav(){
   document.getElementById("nav-dir").textContent=dirTxt(df);
   document.getElementById("nv-dist").textContent=dStr(dk);
   document.getElementById("nv-time").textContent=timeTxt(dk,navTarget.diff);
-  document.getElementById("nv-az").textContent=Math.round(b)+"°";
+  document.getElementById("nv-az").textContent=Math.round(b)+"";
   var prog=navStartDist>0?Math.max(0,Math.min(100,(1-dk/navStartDist)*100)):0;
   document.getElementById("nav-bar").style.width=prog+"%";
 }
 
-// ── KAMERA ───────────────────────────────────────────────────────────────────
 document.getElementById("cam-btn").addEventListener("click",function(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    showCamErr("Twoja przegladarka nie obsluguje kamery. Uzyj Chrome na Androidzie.");
+    document.getElementById("cam-err-txt").textContent="Uzyj Chrome na Androidzie.";
+    document.getElementById("cam-err-txt").style.display="block";
     return;
   }
-  navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:"environment"},width:{ideal:1280}},audio:false})
-    .then(gotStream)
-    .catch(function(){
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{exact:"environment"}},audio:false})
+    .then(gotStream).catch(function(){
       navigator.mediaDevices.getUserMedia({video:true,audio:false}).then(gotStream).catch(function(e){
-        var msg=e.name==="NotAllowedError"?"Brak uprawnien. Ustawienia > Chrome > Kamera > Zezwol.":"Blad: "+e.name;
-        showCamErr(msg);
+        document.getElementById("cam-err-txt").textContent=e.name==="NotAllowedError"?"Brak uprawnien do kamery.":"Blad: "+e.name;
+        document.getElementById("cam-err-txt").style.display="block";
       });
     });
 });
-
 function gotStream(stream){
   var v=document.getElementById("vid");
   v.srcObject=stream;
@@ -425,29 +481,17 @@ function gotStream(stream){
     v.play();
     document.getElementById("cam-over").style.display="none";
     document.getElementById("ar-pill").style.display="block";
-    arOn=true;
-    initCompass();
-    buildQNav();
-    requestAnimationFrame(renderAR);
+    arOn=true; initCompass(); buildQNav(); requestAnimationFrame(renderAR);
   };
 }
 
-function showCamErr(msg){
-  var e=document.getElementById("cam-err-txt");
-  e.textContent=msg; e.style.display="block";
-}
-
-// ── QUICK NAV ────────────────────────────────────────────────────────────────
 function buildQNav(){
-  var qn=document.getElementById("qnav");
-  qn.innerHTML="";
+  var qn=document.getElementById("qnav"); qn.innerHTML="";
   var sorted=POIS.slice().sort(function(a,b){return dkm(uLat,uLng,a.lat,a.lng)-dkm(uLat,uLng,b.lat,b.lng);});
   for(var i=0;i<Math.min(4,sorted.length);i++){
     (function(poi){
-      var dk=dkm(uLat,uLng,poi.lat,poi.lng);
-      var btn=document.createElement("button");
-      btn.className="qnb";
-      btn.textContent=poi.name+" ("+dStr(dk)+")";
+      var btn=document.createElement("button"); btn.className="qnb";
+      btn.textContent=poi.name+" ("+dStr(dkm(uLat,uLng,poi.lat,poi.lng))+")";
       btn.onclick=function(){startNav(poi);};
       btn.addEventListener("touchend",function(e){e.preventDefault();startNav(poi);},{passive:false});
       qn.appendChild(btn);
@@ -455,129 +499,17 @@ function buildQNav(){
   }
 }
 
-// ── KALIBRACJA POI ───────────────────────────────────────────────────────────
-var calMode=false, calIdx=0, calMarkers=[];
-
-function startCalibration(){
-  calMode=true; calIdx=0; calMarkers=[];
-  showCalPrompt();
-  mapObj.on("click", onCalClick);
-  document.getElementById("cal-btn").style.background="#e24b4a";
-  document.getElementById("cal-btn").textContent="Anuluj kalibracje";
-  document.getElementById("cal-btn").onclick=stopCalibration;
-}
-
-function stopCalibration(){
-  calMode=false;
-  mapObj.off("click", onCalClick);
-  var panel=document.getElementById("cal-panel");
-  if(panel) panel.remove();
-  document.getElementById("cal-btn").style.background="#ba7517";
-  document.getElementById("cal-btn").textContent="⚙ Kalibracja POI";
-  document.getElementById("cal-btn").onclick=startCalibration;
-  calMarkers.forEach(function(m){mapObj.removeLayer(m);});
-}
-
-function showCalPrompt(){
-  var old=document.getElementById("cal-panel");
-  if(old) old.remove();
-  if(calIdx>=POIS.length){
-    // Zapisz i zakoncz
-    var out="Skopiuj te wspolrzedne:\n\n";
-    POIS.forEach(function(p){
-      out+=p.name+": "+p.lat.toFixed(6)+", "+p.lng.toFixed(6)+"\n";
-    });
-    alert(out);
-    stopCalibration();
-    renderPOIList();
-    return;
-  }
-  var panel=document.createElement("div");
-  panel.id="cal-panel";
-  panel.style.cssText="position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#0a1e14;border:2px solid #ba7517;border-radius:12px;padding:12px 18px;z-index:9999;text-align:center;max-width:90%";
-  panel.innerHTML='<div style="color:#ba7517;font-size:11px;margin-bottom:4px">TRYB KALIBRACJI ('+(calIdx+1)+'/'+POIS.length+')</div>'
-    +'<div style="font-weight:500;font-size:15px;margin-bottom:6px">Kliknij na mapie lokalizacje:</div>'
-    +'<div style="color:#1d9e75;font-size:18px;font-weight:700">'+POIS[calIdx].name+'</div>'
-    +'<div style="color:#8baab5;font-size:12px;margin-top:4px">'+POIS[calIdx].type+' · '+POIS[calIdx].alt+'m n.p.m.</div>';
-  document.body.appendChild(panel);
-}
-
-function onCalClick(e){
-  if(!calMode||calIdx>=POIS.length) return;
-  var lat=e.latlng.lat, lng=e.latlng.lng;
-  POIS[calIdx].lat=lat;
-  POIS[calIdx].lng=lng;
-
-  // Dodaj marker potwierdzajacy
-  var ic=L.divIcon({html:"<div style='width:28px;height:28px;border-radius:50%;background:"+POIS[calIdx].col+";border:3px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700'>"+POIS[calIdx].id+"</div>",iconAnchor:[14,14],className:""});
-  var m=L.marker([lat,lng],{icon:ic}).addTo(mapObj).bindPopup("<b>"+POIS[calIdx].name+"</b><br>"+lat.toFixed(6)+", "+lng.toFixed(6)).openPopup();
-  calMarkers.push(m);
-
-  calIdx++;
-  setTimeout(showCalPrompt, 300);
-}
-
-// ── MAPA ─────────────────────────────────────────────────────────────────────
 function initMap(){
-  mapObj=L.map("mapEl",{zoomControl:true}).setView([49.4200,20.3700],13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"OSM",maxZoom:19}).addTo(mapObj);
-
-  // Marker uzytkownika
-  var ui=L.divIcon({html:"<div style='width:14px;height:14px;border-radius:50%;background:#378add;border:3px solid #fff;box-shadow:0 0 8px rgba(55,138,221,.8)'></div>",iconAnchor:[7,7],className:""});
-  uMark=L.marker([uLat,uLng],{icon:ui}).addTo(mapObj).bindPopup("<b>Twoja lokalizacja</b>");
-
-  // Automatycznie centruj na GPS gdy dostepny
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(function(p){
-      uLat=p.coords.latitude; uLng=p.coords.longitude;
-      uMark.setLatLng([uLat,uLng]);
-      mapObj.setView([uLat,uLng],14);
-      document.getElementById("gps-lbl").textContent=uLat.toFixed(4)+"N "+uLng.toFixed(4)+"E";
-    },function(){},{ enableHighAccuracy:true,timeout:8000 });
-  }
-
-  // POI markery
+  mapObj=L.map("mapEl").setView([49.420,20.370],13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"OSM",maxZoom:18}).addTo(mapObj);
+  var ui=L.divIcon({html:"<div style='width:14px;height:14px;border-radius:50%;background:#378add;border:3px solid #fff'></div>",iconAnchor:[7,7],className:""});
+  uMark=L.marker([uLat,uLng],{icon:ui}).addTo(mapObj).bindPopup("Twoja lokalizacja");
   for(var i=0;i<POIS.length;i++){
     var p=POIS[i];
     var h="<div style='width:32px;height:32px;border-radius:8px;background:"+p.col+"33;border:2px solid "+p.col+";display:flex;align-items:center;justify-content:center;color:"+p.col+";font-weight:700;font-size:12px'>"+p.type[0].toUpperCase()+"</div>";
     var ic=L.divIcon({html:h,iconAnchor:[16,16],className:""});
-    L.marker([p.lat,p.lng],{icon:ic}).addTo(mapObj)
-      .bindPopup("<b>"+p.name+"</b><br><small style='color:#8baab5'>"+p.type+" &middot; "+p.alt+"m n.p.m.</small><br><span style='font-size:12px'>"+p.desc+"</span>");
+    L.marker([p.lat,p.lng],{icon:ic}).addTo(mapObj).bindPopup("<b>"+p.name+"</b><br><small style='color:#8baab5'>"+p.alt+"m n.p.m.</small><br>"+p.desc);
   }
-
-  // Marker testowy - centrum Czorsztyna (znane miejsce do weryfikacji)
-  L.marker([49.4383,20.3308],{icon:L.divIcon({html:"<div style='background:#e24b4a;color:#fff;padding:3px 6px;border-radius:6px;font-size:10px;font-weight:700;white-space:nowrap'>TEST: Czorsztyn</div>",className:""})}).addTo(mapObj); (trasy przyblizone)
-  L.polyline([[49.4347,20.3197],[49.4280,20.3350],[49.4200,20.3600],[49.4097,20.3956],[49.4022,20.3931]],
-    {color:"#e24b4a",weight:3,dashArray:"7,5",opacity:.8}).addTo(mapObj).bindPopup("Szlak czerwony");
-  L.polyline([[49.4194,20.4028],[49.4150,20.3950],[49.4097,20.3956],[49.4052,20.4113]],
-    {color:"#378add",weight:3,dashArray:"7,5",opacity:.8}).addTo(mapObj).bindPopup("Szlak niebieski");
-
-  // Przycisk kalibracji
-  var calBtn=L.control({position:"topleft"});
-  calBtn.onAdd=function(){
-    var d=L.DomUtil.create("div","");
-    d.innerHTML='<button id="cal-btn" style="background:#ba7517;border:none;border-radius:8px;padding:6px 10px;color:#fff;font-size:11px;cursor:pointer;margin-top:44px;display:block">&#9881; Kalibracja POI</button>';
-    L.DomEvent.disableClickPropagation(d);
-    return d;
-  };
-  calBtn.addTo(mapObj);
-  setTimeout(function(){
-    var btn=document.getElementById("cal-btn");
-    if(btn) btn.addEventListener("click",startCalibration);
-  },500);
-
-  // Przycisk GPS
-  var locBtn=L.control({position:"topright"});
-  locBtn.onAdd=function(){
-    var d=L.DomUtil.create("button","");
-    d.style.cssText="background:#0f2040;border:1px solid rgba(29,158,117,.4);border-radius:8px;padding:6px 10px;color:#1d9e75;font-size:12px;cursor:pointer;margin-top:8px";
-    d.textContent="GPS";
-    L.DomEvent.on(d,"click",function(){
-      mapObj.setView([uLat,uLng],15);
-    });
-    return d;
-  };
-  locBtn.addTo(mapObj);
 }
 
 function renderPOIList(){
@@ -585,15 +517,14 @@ function renderPOIList(){
   for(var i=0;i<POIS.length;i++){
     var p=POIS[i];
     var dc=p.diff==="Latwa"?"background:rgba(29,158,117,.15);color:#1d9e75":"background:rgba(186,117,23,.15);color:#ba7517";
-    html+="<div class='card' style='cursor:pointer;display:flex;align-items:center;gap:10px' onclick='mapObj.flyTo(["+p.lat+","+p.lng+"],15,{duration:1});goTab(0)'>";
+    html+="<div class='card' style='cursor:pointer;display:flex;align-items:center;gap:10px' onclick='mapObj.flyTo(["+p.lat+","+p.lng+"],15,{duration:1})'>";
     html+="<div style='width:34px;height:34px;border-radius:8px;background:"+p.col+"22;border:1px solid "+p.col+"55;display:flex;align-items:center;justify-content:center;color:"+p.col+";font-weight:700;font-size:12px;flex-shrink:0'>"+p.type[0].toUpperCase()+"</div>";
-    html+="<div style='flex:1'><div style='font-weight:500;font-size:14px'>"+p.name+"</div><div style='color:#8baab5;font-size:11px'>"+p.alt+"m n.p.m. &middot; "+p.diff+"</div></div>";
+    html+="<div style='flex:1'><div style='font-weight:500;font-size:14px'>"+p.name+"</div><div style='color:#8baab5;font-size:11px'>"+p.alt+"m n.p.m. - "+p.diff+"</div></div>";
     html+="<span style='font-size:11px;padding:2px 7px;border-radius:20px;"+dc+"'>"+p.diff+"</span></div>";
   }
   el.innerHTML=html;
 }
 
-// ── ODKRYJ ───────────────────────────────────────────────────────────────────
 var dFilt="wszystkie";
 function renderDisc(f){
   dFilt=f||"wszystkie";
@@ -609,23 +540,22 @@ function renderDisc(f){
     if(dFilt!=="wszystkie"&&p.type!==dFilt) continue;
     dh+="<div class='card' id='dc"+p.id+"'><div style='display:flex;align-items:center;gap:10px;cursor:pointer' onclick='togD("+p.id+")'>";
     dh+="<div style='width:34px;height:34px;border-radius:8px;background:"+p.col+"22;border:1px solid "+p.col+"55;display:flex;align-items:center;justify-content:center;color:"+p.col+";font-weight:700;font-size:12px;flex-shrink:0'>"+p.type[0].toUpperCase()+"</div>";
-    dh+="<div style='flex:1'><div style='font-weight:500;font-size:14px'>"+p.name+"</div><div style='color:#8baab5;font-size:11px'>"+p.alt+"m &middot; "+p.diff+"</div></div>";
-    dh+="<span id='da"+p.id+"' style='color:#8baab5'>&#8964;</span></div>";
+    dh+="<div style='flex:1'><div style='font-weight:500;font-size:14px'>"+p.name+"</div><div style='color:#8baab5;font-size:11px'>"+p.alt+"m - "+p.diff+"</div></div>";
+    dh+="<span id='da"+p.id+"' style='color:#8baab5'>v</span></div>";
     dh+="<div id='de"+p.id+"' style='display:none;margin-top:10px;border-top:1px solid rgba(29,158,117,.07);padding-top:10px'>";
     dh+="<p style='color:#8baab5;font-size:13px;line-height:1.6;margin-bottom:8px'>"+p.desc+"</p>";
     dh+="<div style='background:#0a1628;border-radius:8px;padding:8px 11px;margin-bottom:6px'><div style='font-size:10px;color:#ba7517;margin-bottom:2px'>Legenda</div><div style='color:#8baab5;font-size:12px;line-height:1.4'>"+p.leg+"</div></div>";
     dh+="<div style='background:#0a1628;border-radius:8px;padding:8px 11px;margin-bottom:8px'><div style='font-size:10px;color:#1d9e75;margin-bottom:2px'>Fauna</div><div style='color:#8baab5;font-size:12px'>"+p.fauna+"</div></div>";
-    dh+="<button onclick='goTab(1);setTimeout(function(){startNav(POIS["+i+"]);},200)' style='background:rgba(29,158,117,.15);border:1px solid #1d9e75;border-radius:8px;padding:7px 0;color:#1d9e75;font-size:12px;cursor:pointer;width:100%'>&#9655; Nawiguj do "+p.name+"</button>";
+    dh+="<button onclick='goTab(1);setTimeout(function(){startNav(POIS["+i+"]);},200)' style='background:rgba(29,158,117,.15);border:1px solid #1d9e75;border-radius:8px;padding:7px 0;color:#1d9e75;font-size:12px;cursor:pointer;width:100%'>Nawiguj do "+p.name+"</button>";
     dh+="</div></div>";
   }
   document.getElementById("dlist").innerHTML=dh;
 }
 function togD(id){
   var e=document.getElementById("de"+id),a=document.getElementById("da"+id),op=e.style.display==="block";
-  e.style.display=op?"none":"block"; a.innerHTML=op?"&#8964;":"&#8963;";
+  e.style.display=op?"none":"block"; a.textContent=op?"v":"^";
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded",function(){
   initMap();
   renderPOIList();
